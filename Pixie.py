@@ -4,75 +4,86 @@ from pathlib import Path
 import numpy as np
 from sklearn.model_selection import train_test_split
 
+ASSETS =  Path(__file__).resolve().parent / "assets"
 class Pixie:
     '''
         Meet Pixie. A drug addict in recovery.
         instead of meph, Prixie setteled on pixels.
         He reads images, turn them into juicy numpy pixel arrays, and feeds them
-        to this cousion Percy, teaching him to classify them. 
+        to his cousion Percy, teaching him to classify them. 
     '''
     def __init__(self):
-        self.brain = Percy(3)
+        self.brain = Percy(3)  
         self.classifiers = {
             "land": 0,
             "sea": 1
         }
-        self.file_format = "jpg"
-        self.assets = Path(__file__).resolve().parent / "assets"
-        self.assets_count = self._count_files(self.assets)
 
-    def _count_files(self, folder):
-        return sum(1 for item in folder.iterdir() if item.is_file())
+        self.assets = self._prepare_assets()
 
-    def run(self):
-        inputs, labels = self._parse_images()
-        self.normalize(inputs)
-        train_inputs, test_inputs, train_labels, test_labels = self._train_test_split(inputs, labels)
-        self.train(train_inputs, train_labels)
-        self.test(test_inputs, test_labels)
+        self.inputs, self.labels = self._parse_images()
 
+        self.inputs = self._normalize_inputs()
 
-    def normalize(self, inputs):
-        inputs = np.asarray(inputs, dtype=float) / 255.0
+        self.train_inputs, self.test_inputs, self.train_labels, self.test_labels = self._train_test_split()
+        
+    def _prepare_assets(self) -> list:
+        assets = []
+        dirs = (ASSETS / "land", ASSETS / "sea")
+        classifier = 0
+        for dir in dirs:
+            for item in dir.iterdir():
+                if item.is_file():
+                    assets.append((item, classifier))
 
-    def train(self, inputs, labels):
-        self.brain.train(inputs, labels)
+            classifier += 1
 
-
-    def test(self, inputs, labels):
-        total = len(labels)
-        correct = 0
-        wrong = 0
-        for i in range(total):
-            if self.brain.predict(inputs[i]) == labels[i]: 
-                correct+=1
-            else:
-                wrong+=1
-
-        # output results
-        print(f"Percy classified correctly: {correct}")
-        print(f"Percy classified incorrectly: {wrong}")
-        print(f"Accuracy: {(correct / total) * 100}%")
-
+        return assets
 
     def _parse_images(self) -> tuple:
         inputs = []
         labels = []
 
         # iterate over all of the images, and build the inputs, labels lists
-        for dir in self.classifiers.keys():
-            curr_dir = curr_dir = self.assets / dir
-            for i in range(1, self._count_files(curr_dir) + 1):
-                # open the current image
-                with Image.open(rf"{curr_dir}/{dir}{i}.{self.file_format}") as img:
-                    # convert to a numpy array
-                    arr = np.array(img, dtype=np.uint8)
+        for tuple in self.assets:
+            # open the current image
+            file = tuple[0]
+            classifier = tuple[1]
+            with Image.open(file) as img:
+                # convert to a numpy array
+                arr = np.array(img, dtype=np.uint8)
 
-                # update inputs and labels accordignly
-                inputs.append(self._get_color_averages(arr))
-                labels.append(self.classifiers[dir])
-        return (inputs, labels)
-        
+            # update inputs and labels accordignly
+            inputs.append(self._get_color_averages(arr))
+            labels.append(classifier)
+
+        return (inputs, labels)    
+
+    def run(self):
+        self.train()
+        self.test()
+
+    def _normalize_inputs(self):
+        return np.asarray(self.inputs, dtype=float) / 255.0
+
+    def train(self):
+        self.brain.train(self.train_inputs, self.train_labels)
+
+    def test(self):
+        total = len(self.test_labels)
+        correct = 0
+        wrong = 0
+        for i in range(total):
+            if self.check_prediction(self.test_inputs[i], self.test_labels[i]): correct += 1
+            else: wrong += 1
+
+        # output results
+        print(f"Percy classified correctly: {correct}")
+        print(f"Percy classified incorrectly: {wrong}")
+        print(f"Accuracy: {(correct / total) * 100}%")
+
+    def check_prediction(self, input, label):
+        return self.brain.predict(input) == label
         
     def _get_color_averages(self, arr) -> tuple:
         return (
@@ -81,11 +92,17 @@ class Pixie:
             arr[:,:,2].mean()
         )
 
-    def _train_test_split(self, inputs, labels) -> tuple:
+    def _train_test_split(self) -> tuple:
         return train_test_split(
-            inputs,
-            labels,
+            self.inputs,
+            self.labels,
             test_size=0.2,
-            stratify=labels,
+            stratify=self.labels,
             random_state=42
         )
+
+    def _random_land(self):
+        pass
+
+    def _random_sea(self):
+        pass
