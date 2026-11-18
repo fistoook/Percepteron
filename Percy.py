@@ -1,5 +1,4 @@
 import numpy as np
-
 class Percy:
     '''
         Meet Percy, a percepteron. 
@@ -24,10 +23,14 @@ class Percy:
         sum = np.dot(self.weights, input) + self.bias
         return self.activation(sum)
 
-    def train(self, inputs, labels):
+    def train(self, inputs, labels, on_epoch_end=None):
         inputs = np.asarray(inputs, dtype=float)
-        for _ in range(self.epohcs):
+        for j in range(self.epohcs):
             for i in range(len(inputs)):
                 prediction = self.predict(inputs[i])
                 self.weights += (labels[i] - prediction) * inputs[i] * self.learning_rate
                 self.bias += (labels[i] - prediction) * self.learning_rate
+
+            if j % 10 == 0 or j == self.epohcs - 1:
+                if on_epoch_end is not None:
+                    on_epoch_end(self.weights.copy(), self.bias)

@@ -2,6 +2,11 @@ import tkinter as tk
 from PIL import ImageTk, Image, ImageOps
 
 class Goey(tk.Tk):
+    '''
+        Goey is a (goey) tkinter user interface made for 
+        playing around with the Percepteron model, Percy.
+        It is used by Macey, The MCV, and it is cool.
+    '''
     def __init__(self):
         super().__init__()
         self.look_nice()

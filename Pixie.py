@@ -59,15 +59,15 @@ class Pixie:
 
         return (inputs, labels)    
 
-    def run(self):
-        self.train()
+    def run(self, terminal_interface=None):
+        self.train(terminal_interface.update_terminal)
         self.test()
 
     def _normalize_inputs(self):
         return np.asarray(self.inputs, dtype=float) / 255.0
 
-    def train(self):
-        self.brain.train(self.train_inputs, self.train_labels)
+    def train(self, terminal_interface=None):
+        self.brain.train(self.train_inputs, self.train_labels, terminal_interface)
 
     def test(self):
         total = len(self.test_labels)

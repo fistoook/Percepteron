@@ -2,12 +2,18 @@ from pathlib import Path
 import random
 
 class Macey:
-    def __init__(self, goey, model):
+    '''
+        Macey has a big heart. she is the MCV.
+        She acts as the man in the middle - in the good sense- 
+        between the Goey GUI and the Pixie image classification model.
+    '''
+    def __init__(self, goey, model, terminal_interface):
         self.goey = goey
         self.model = model
+        self.terminal_interface = terminal_interface
 
     def run(self):
-        self.model.run()
+        self.model.run(self.terminal_interface)
 
         self.goey.button.configure(command=self.refresh)
 
