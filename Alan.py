@@ -23,9 +23,17 @@ class Alan:
 
         joined_frame = "\n".join(frames)
         print(f"\033[H\033[J{joined_frame}", end="", flush=True)
-        
-    def display_results(self, correct, wrong):
-        pass
+
+    def display_results(self, model_name, loss, accuracy):
+        print(
+            f"\n{'─' * 36}\n"
+            f" {model_name} — results\n"
+            f"{'─' * 36}\n"
+            f"{'Accuracy':<18}{GREEN}{accuracy:>17.2%}{RESET}\n"
+            f"{'Loss':<18}{RED}{loss:>18.4f}{RESET}\n"
+            f"{'─' * 36}",
+            flush=True
+        )
 
     def _build_weights(self, weights) -> str:
         rows = []

@@ -38,4 +38,6 @@ class Percy:
             if self.predict_one(sample) == label: correct += 1
             else: wrong += 1
 
-        on_test_end(correct, wrong)
+        accuracy = correct / (correct + wrong)
+        loss = wrong / (correct + wrong)
+        on_test_end(self.name, loss, accuracy)

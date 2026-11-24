@@ -50,4 +50,4 @@ class TensorPercy(tf.keras.Sequential):
             verbose=0
         )
 
-        on_test_end(loss, accuracy)
+        on_test_end(self.name, loss, accuracy)
