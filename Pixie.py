@@ -11,8 +11,9 @@ class Pixie:
     def __init__(self):
         self.percy = Percy(3)  
         self.tensor_percy = TensorPercy(3)
+        self.tensor_precy_tanh = TensorPercy(3, activation="tanh")
 
-        self.models = [self.percy, self.tensor_percy]
+        self.models = [self.percy, self.tensor_percy, self.tensor_precy_tanh]
 
         self.classifiers = {
             0: "Land",
@@ -85,9 +86,9 @@ class Pixie:
         self.test(alan.display_results)
 
     def train(self, on_epohc_end=None):
-        self.percy.train(self.train_inputs, self.train_labels, on_epoch_end=on_epohc_end)
-        self.tensor_percy.train(self.train_inputs, self.train_labels, on_epoch_end=on_epohc_end)
+        for model in self.models:
+            model.train(self.train_inputs, self.train_labels, on_epoch_end=on_epohc_end)
 
     def test(self, on_test_end=None):
-        self.percy.test(self.test_inputs, self.test_labels, on_test_end=on_test_end)
-        self.tensor_percy.test(self.test_inputs, self.test_labels, on_test_end=on_test_end)
+        for model in self.models:
+            model.test(self.train_inputs, self.train_labels, on_test_end=on_test_end)

@@ -20,7 +20,7 @@ class TensorPercy(tf.keras.Sequential):
             loss='binary_crossentropy', 
             metrics =['accuracy']
         )
-        self.name = "TensorPercy"
+        self.name = f"TensorPercy{activation}"
 
     def train(self, inputs, labels, on_epoch_end=None):
         inputs = np.asarray(inputs, dtype=float)

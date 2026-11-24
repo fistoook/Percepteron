@@ -19,9 +19,9 @@ class Goey(tk.Tk):
         tk.mainloop()
 
     def _init_screen(self):
-        dimensions = (int(self.winfo_screenwidth() * 0.5), int(self.winfo_screenheight() * 0.5))
+        dimensions = (int(self.winfo_screenwidth() * 0.8), int(self.winfo_screenheight() * 0.8))
         self.geometry(f"{dimensions[0]}x{dimensions[1]}")
-        self.title("Pixie")
+        self.title("Land & Sea Classifier")
         self.config(background="tomato")
 
     def _init_widgets(self):
