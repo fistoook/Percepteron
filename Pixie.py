@@ -10,10 +10,19 @@ ASSETS =  Path(__file__).resolve().parent / "assets"
 class Pixie:
     def __init__(self):
         self.percy = Percy(3)  
-        self.tensor_percy = TensorPercy(3)
-        self.tensor_precy_tanh = TensorPercy(3, activation="tanh")
+        self.tensor_percy_sigmoid_sgd = TensorPercy(3, activation="sigmoid", optimizer_name="SGD")
+        self.tensor_percy_sigmoid_adam = TensorPercy(3, activation="sigmoid", optimizer_name="adam")
+        self.tensor_precy_tanh_sgd = TensorPercy(3, activation="tanh", optimizer_name="SGD")
+        self.tensor_precy_tanh_adam = TensorPercy(3, activation="tanh", optimizer_name="adam")
 
-        self.models = [self.percy, self.tensor_percy, self.tensor_precy_tanh]
+
+        self.models = [
+            self.percy, 
+            self.tensor_percy_sigmoid_sgd,  
+            self.tensor_percy_sigmoid_adam, 
+            self.tensor_precy_tanh_sgd, 
+            self.tensor_precy_tanh_adam
+            ]
 
         self.classifiers = {
             0: "Land",

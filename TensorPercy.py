@@ -5,22 +5,24 @@ import tensorflow as tf
 import numpy as np
 
 class TensorPercy(tf.keras.Sequential):
-    def __init__(self, number_entrances, epohcs=100, learning_rate=0.01, activation="sigmoid"):
+    def __init__(self, number_entrances, epohcs=100, learning_rate=0.01, activation="sigmoid", optimizer_name="SGD"):
         try:
             super().__init__([tf.keras.layers.Dense(
                 1, activation=activation, input_shape=(number_entrances,))]
             )
+            optimizer = tf.keras.optimizers.get(optimizer_name)
+            optimizer.learning_rate = learning_rate
         except:
             print("Wrong parameters to TensorPercy")
 
         self.epochs = epohcs
 
         self.compile(
-            optimizer=tf.keras.optimizers.SGD(learning_rate=learning_rate), 
+            optimizer=optimizer, 
             loss='binary_crossentropy', 
             metrics =['accuracy']
         )
-        self.name = f"TensorPercy{activation}"
+        self.name = f"TensorPercy-{activation}-{optimizer_name}"
 
     def train(self, inputs, labels, on_epoch_end=None):
         inputs = np.asarray(inputs, dtype=float)
