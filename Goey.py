@@ -9,54 +9,103 @@ class Goey(tk.Tk):
     '''
     def __init__(self):
         super().__init__()
-        self.look_nice()
-        self.init_widgets()
+        self._init_screen()
+        self._init_widgets()
+        self._structure_widgets()
 
-    def run():
+        self.prediction_frames_dict = {}
+
+    def run(self):
         tk.mainloop()
 
-    def look_nice(self):
+    def _init_screen(self):
         dimensions = (int(self.winfo_screenwidth() * 0.5), int(self.winfo_screenheight() * 0.5))
         self.geometry(f"{dimensions[0]}x{dimensions[1]}")
         self.title("Pixie")
         self.config(background="tomato")
 
-    def init_widgets(self):
-        # main frame holding everything besides the button
-        self.image_frame = tk.Frame(self)
+    def _init_widgets(self):
+        self.main_frame = tk.Frame(self)
+
+        self.title_label = tk.Label(self.main_frame, text="Land & Sea Classifier")
+
+        self.button = tk.Button(self.main_frame, text="Refresh")
+
+        self.image_frame = tk.Frame(self.main_frame)
 
         self.image1 = tk.Label(self.image_frame)
         self.image2 = tk.Label(self.image_frame)
 
-        self.label1 = tk.Label(self.image_frame)
-        self.label2 = tk.Label(self.image_frame)
+        self.classification_frame = tk.Frame(self.main_frame)
 
-        self.button = tk.Button(self, text="Switch")
+        self.classification_label1 = tk.Label(self.classification_frame)
+        self.classification_label2 = tk.Label(self.classification_frame)
 
-        self.grid_them()
+        self.predictions_frame = tk.Frame(self.main_frame)
 
-    def grid_them(self):
-        self.image_frame.grid()
-        self.image1.grid(row=0, column=0)
-        self.image2.grid(row=0, column=1)
-        self.label1.grid(row=1, column=0)
-        self.label2.grid(row=1, column=1)   
-        self.button.grid(row=2) 
 
-    def update_widgets(self, images, predictions, labels):
+
+    def _structure_widgets(self):
+        self.main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+
+        self.title_label.pack(pady=(0, 15))
+
+        self.image_frame.pack(fill="x", pady=10)
+
+        self.image_frame.columnconfigure(0, weight=1)
+        self.image_frame.columnconfigure(1, weight=1)
+
+        self.image1.grid(row=0, column=0, padx=10)
+        self.image2.grid(row=0, column=1, padx=10)
+
+        self.classification_label1.grid(row=0, column=0)
+        self.classification_label2.grid(row=0, column=1)
+
+        self.classification_frame.columnconfigure(0, weight=1)
+        self.classification_frame.columnconfigure(1, weight=1)
+
+        self.classification_frame.pack(fill="x")
+        self.predictions_frame.pack(fill="x", pady=10)
+
+        self.button.pack(pady=10)
+
+    def update_widgets(self, images, predictions, classifications):
         self.photo1 = self._load_photo(images[0][0])
         self.photo2 = self._load_photo(images[1][0])
 
         self.image1.configure(image=self.photo1)
         self.image2.configure(image=self.photo2)
 
-        prediction1 = "Land" if predictions[0] == 0 else "Sea"
-        prediction2 = "Land" if predictions[1] == 0 else "Sea"
+        self.classification_label1.configure(text=classifications[0])
+        self.classification_label2.configure(text=classifications[1])
 
-        self.label1.configure(text=f"Predcited: {prediction1}")
-        self.label2.configure(text=f"Predicted: {prediction2}")
+        for widget in self.predictions_frame.winfo_children():
+            widget.destroy()
 
-    
+        for model_name, (prediction1, prediction2) in predictions.items():
+            prediction_frame = tk.Frame(self.predictions_frame)
+
+            self.prediction_frames_dict[model_name] = prediction_frame
+
+            for widget in prediction_frame.winfo_children():
+                widget.destroy()
+
+            name_label = tk.Label(prediction_frame, text=model_name)
+
+            prediction1_label = tk.Label(prediction_frame, text=prediction1)
+            prediction2_label = tk.Label(prediction_frame, text=prediction2)
+
+            prediction_frame.pack(fill="x", pady=5)
+
+            prediction_frame.columnconfigure(0, weight=1)
+            prediction_frame.columnconfigure(1, weight=1)
+
+            name_label.grid(row=0, column=0, columnspan=2)
+            prediction1_label.grid(row=1, column=0)
+            prediction2_label.grid(row=1, column=1)
+
+            
+
     def _load_photo(self, path):
         with Image.open(path) as img:
             resized = ImageOps.pad(
@@ -65,3 +114,6 @@ class Goey(tk.Tk):
                 color="black"
             )
         return ImageTk.PhotoImage(resized)
+
+    def set_refresh_callback(self, callback=None):
+        self.button.configure(command=callback)

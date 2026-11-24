@@ -12,9 +12,11 @@ class Pixie:
         self.percy = Percy(3)  
         self.tensor_percy = TensorPercy(3)
 
+        self.models = [self.percy, self.tensor_percy]
+
         self.classifiers = {
-            "land": 0,
-            "sea": 1
+            0: "Land",
+            1: "Sea"
         }
 
         self.assets = self._prepare_assets()

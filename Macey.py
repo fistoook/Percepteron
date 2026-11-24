@@ -9,19 +9,35 @@ class Macey:
     def run(self):
         self.pixie.run(self.alan)
 
-        self.goey.button.configure(command=self.refresh)
+        self.goey.set_refresh_callback(self.refresh)
 
         self.refresh()
-        self.goey.mainloop()
+        self.goey.run()
 
     def refresh(self):
         pick1, pick2 = self.pick_images()
+        predictions = {}
 
-        images = (self.pixie.assets[pick1], self.pixie.assets[pick2])
-        labels = (self.pixie.labels[pick1], self.pixie.labels[pick2])
-        inputs = (self.pixie.inputs[pick1], self.pixie.inputs[pick2])
-        predictions = (self.pixie.percy.predict_one(inputs[0]),
-                       self.pixie.percy.predict_one(inputs[1]))
+        images = (
+            self.pixie.assets[pick1], 
+            self.pixie.assets[pick2]
+            )
+        
+        labels = (
+            self.pixie.classifiers[self.pixie.labels[pick1]], 
+            self.pixie.classifiers[self.pixie.labels[pick2]]
+            )
+        
+        input1, input2 = (
+            self.pixie.inputs[pick1], 
+            self.pixie.inputs[pick2]
+            )
+
+        for model in self.pixie.models:
+            prediction1 = self.pixie.classifiers[model.predict_one(input1)]
+            prediction2 = self.pixie.classifiers[model.predict_one(input2)]
+        
+            predictions[model.name] = (prediction1, prediction2)
 
         self.goey.update_widgets(images, predictions, labels)
 

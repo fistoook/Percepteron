@@ -11,7 +11,7 @@ class Alan:
         self.init_bias = init_bias
         self.init_weights = init_weights.copy()
         self.models = {}
-
+        
     def update_terminal(self, model_name, weights, bias):
         self.models[model_name] = (weights, bias)
         frames = []
