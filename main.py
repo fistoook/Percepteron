@@ -4,11 +4,11 @@ from Macey import Macey
 from Alan import Alan
 
 def main():
-    model = Pixie()
-    gui = Goey()
-    terminal = Alan(model.brain.bias, model.brain.weights)
+    pixie = Pixie()
+    goey = Goey()
+    alan = Alan(pixie.percy.bias, pixie.percy.weights)
 
-    macey = Macey(gui, model, terminal)
+    macey = Macey(goey, pixie, alan)
 
     macey.run()
 

@@ -8,15 +8,9 @@ from sklearn.model_selection import train_test_split
 ASSETS =  Path(__file__).resolve().parent / "assets"
 
 class Pixie:
-    '''
-        Meet Pixie. A drug addict in recovery.
-        instead of meph, Prixie setteled on pixels.
-        He reads images, turn them into juicy numpy pixel arrays, and feeds them
-        to his cousion Percy, teaching him to classify them. 
-    '''
     def __init__(self):
-        self.brain = Percy(3)  
-        self.tensor_brain = TensorPercy(3)
+        self.percy = Percy(3)  
+        self.tensor_percy = TensorPercy(3)
 
         self.classifiers = {
             "land": 0,
@@ -35,6 +29,7 @@ class Pixie:
         assets = []
         dirs = (ASSETS / "land", ASSETS / "sea")
         classifier = 0
+
         for dir in dirs:
             for item in dir.iterdir():
                 if item.is_file():
@@ -61,47 +56,8 @@ class Pixie:
             inputs.append(self._get_color_averages(arr))
             labels.append(classifier)
 
-        return (inputs, labels)   
+        return (inputs, labels) 
 
-    def _normalize_inputs(self):
-        return np.asarray(self.inputs, dtype=float) / 255.0 
-
-    def run(self, terminal_interface):
-        self.train(terminal_interface.update_terminal)
-        self.test()
-
-    def train(self, on_epohc_end=None):
-        self.brain.train(self.train_inputs, self.train_labels, on_epoch_end=on_epohc_end)
-        self.tensor_brain.train(self.train_inputs, self.train_labels, on_epoch_end=on_epohc_end)
-
-    def test(self):
-        total = len(self.test_labels)
-        percy_correct = 0
-        percy_wrong = 0
-        tensor_correct = 0
-        tensor_wrong = 0
-
-        for i in range(total):
-            percy_prediction, tensor_prediction = self.check_prediction(self.test_inputs[i], self.test_labels[i])
-            tensor_classification = (tensor_prediction >= 0.5).astype(int)
-
-            if percy_prediction: percy_correct += 1
-            else: percy_wrong += 1
-
-            if tensor_classification: tensor_correct += 1
-            else: tensor_wrong += 1
-
-        # output results
-        print(f"Percy classified correctly: {percy_correct}")
-        print(f"Percy classified incorrectly: {percy_wrong}")
-        print(f"Accuracy: {(percy_correct / total) * 100}%\n")
-        print(f"Tensor classified correctly: {tensor_correct}")
-        print(f"Tensor classified incorrectly: {tensor_wrong}")
-        print(f"Accuracy: {(percy_correct / total) * 100}%")
-
-    def check_prediction(self, input, label) -> tuple:
-        return self.brain.predict(input) == label, self.tensor_brain.predict(np.array([input]))
-        
     def _get_color_averages(self, arr) -> tuple:
         return (
             arr[:,:,0].mean(),
@@ -109,6 +65,7 @@ class Pixie:
             arr[:,:,2].mean()
         )
 
+    
     def _train_test_split(self) -> tuple:
         return train_test_split(
             self.inputs,
@@ -116,10 +73,19 @@ class Pixie:
             test_size=0.2,
             stratify=self.labels,
             random_state=42
-        )
+        )  
 
-    def _random_land(self):
-        pass
+    def _normalize_inputs(self):
+        return np.asarray(self.inputs, dtype=float) / 255.0 
 
-    def _random_sea(self):
-        pass
+    def run(self, alan):
+        self.train(alan.update_terminal)
+        self.test(alan.display_results)
+
+    def train(self, on_epohc_end=None):
+        self.percy.train(self.train_inputs, self.train_labels, on_epoch_end=on_epohc_end)
+        self.tensor_percy.train(self.train_inputs, self.train_labels, on_epoch_end=on_epohc_end)
+
+    def test(self, on_test_end=None):
+        self.percy.test(self.test_inputs, self.test_labels, on_test_end=on_test_end)
+        self.tensor_percy.test(self.test_inputs, self.test_labels, on_test_end=on_test_end)
