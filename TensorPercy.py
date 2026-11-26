@@ -6,14 +6,11 @@ import numpy as np
 
 class TensorPercy(tf.keras.Sequential):
     def __init__(self, number_entrances, epohcs=100, learning_rate=0.01, activation="sigmoid", optimizer_name="SGD"):
-        try:
-            super().__init__([tf.keras.layers.Dense(
-                1, activation=activation, input_shape=(number_entrances,))]
-            )
-            optimizer = tf.keras.optimizers.get(optimizer_name)
-            optimizer.learning_rate = learning_rate
-        except:
-            print("Wrong parameters to TensorPercy")
+        super().__init__([tf.keras.layers.Dense(
+            1, activation=activation, input_shape=(number_entrances,))]
+        )
+        optimizer = tf.keras.optimizers.get(optimizer_name)
+        optimizer.learning_rate = learning_rate
 
         self.epochs = epohcs
 
@@ -22,7 +19,17 @@ class TensorPercy(tf.keras.Sequential):
             loss='binary_crossentropy', 
             metrics =['accuracy']
         )
+
         self.name = f"TensorPercy-{activation}-{optimizer_name}"
+
+    def get_bias(self) -> float:
+        return float(self.layers[0].bias.numpy()[0])
+
+    def get_input_weights(self) -> np.array:
+        return self.layers[0].kernel.numpy().flatten()
+
+    def get_name(self):
+        return self.name
 
     def train(self, inputs, labels, on_epoch_end=None):
         inputs = np.asarray(inputs, dtype=float)
@@ -31,7 +38,9 @@ class TensorPercy(tf.keras.Sequential):
         
         def _epohc_handler(epohc, logs):
             weights, bias = self.layers[0].get_weights()
-            on_epoch_end(self.name, weights.flatten(), bias[0])
+
+            if on_epoch_end is not None:
+                on_epoch_end(self.name, weights.flatten(), bias[0])
 
         self.fit(
             inputs,
@@ -52,4 +61,5 @@ class TensorPercy(tf.keras.Sequential):
             verbose=0
         )
 
-        on_test_end(self.name, loss, accuracy)
+        if on_test_end is not None:
+            on_test_end(self.name, loss, accuracy)

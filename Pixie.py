@@ -12,17 +12,13 @@ class Pixie:
         self.percy = Percy(3)  
         self.tensor_percy_sigmoid_sgd = TensorPercy(3, activation="sigmoid", optimizer_name="SGD")
         self.tensor_percy_sigmoid_adam = TensorPercy(3, activation="sigmoid", optimizer_name="adam")
-        self.tensor_precy_tanh_sgd = TensorPercy(3, activation="tanh", optimizer_name="SGD")
-        self.tensor_precy_tanh_adam = TensorPercy(3, activation="tanh", optimizer_name="adam")
 
 
         self.models = [
             self.percy, 
             self.tensor_percy_sigmoid_sgd,  
             self.tensor_percy_sigmoid_adam, 
-            self.tensor_precy_tanh_sgd, 
-            self.tensor_precy_tanh_adam
-            ]
+        ]
 
         self.classifiers = {
             0: "Land",
@@ -36,6 +32,9 @@ class Pixie:
         self.inputs = self._normalize_inputs()
 
         self.train_inputs, self.test_inputs, self.train_labels, self.test_labels = self._train_test_split()
+
+    def get_models(self):
+        return self.models
         
     def _prepare_assets(self) -> list:
         assets = []
@@ -100,4 +99,4 @@ class Pixie:
 
     def test(self, on_test_end=None):
         for model in self.models:
-            model.test(self.train_inputs, self.train_labels, on_test_end=on_test_end)
+            model.test(self.test_inputs, self.test_labels, on_test_end=on_test_end)

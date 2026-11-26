@@ -1,12 +1,21 @@
 import numpy as np
 class Percy:
     def __init__(self, number_entrances, epohcs=1000, learning_rate=0.01):
-        self.bias = 0
+        self.bias = 0.0
         self.learning_rate = learning_rate
         self.number_entrances = number_entrances
         self.weights = np.zeros(number_entrances)
         self.epohcs = epohcs
         self.name = "Percy"
+
+    def get_bias(self) -> float:
+        return self.bias
+
+    def get_input_weights(self) -> np.array:
+        return self.weights
+
+    def get_name(self):
+        return self.name
 
     def activation(self, prediction) -> int:
         if prediction > 0: return 1
@@ -40,4 +49,6 @@ class Percy:
 
         accuracy = correct / (correct + wrong)
         loss = wrong / (correct + wrong)
-        on_test_end(self.name, loss, accuracy)
+
+        if on_test_end is not None:
+            on_test_end(self.name, loss, accuracy)
